@@ -130,6 +130,7 @@ export default class Timeslot extends Component {
       end,
       selectedSlot: null,
       openedPeriods: [],
+      clickedPeriods: [],
       showDatePicker: false
     }
   }
@@ -269,8 +270,17 @@ export default class Timeslot extends Component {
     )
   }
 
-  togglePeriodHeader = periodKey => () => {
-    let { openedPeriods } = this.state
+  togglePeriodHeader = (periodKey, isFirstPeriod) => () => {
+    let { openedPeriods, clickedPeriods } = this.state
+
+    if (isFirstPeriod && !clickedPeriods.includes(periodKey)) {
+      return this.setState({
+        clickedPeriods: [
+          ...clickedPeriods,
+          periodKey
+        ]
+      })
+    }
 
     if (openedPeriods.includes(periodKey)) {
       openedPeriods = openedPeriods.filter(k => k !== periodKey)
@@ -283,8 +293,8 @@ export default class Timeslot extends Component {
     })
   }
 
-  renderPeriodicSlots (period, slots, day) {
-    const { openedPeriods } = this.state
+  renderPeriodicSlots (period, slots, day, firstPeriod) {
+    const { openedPeriods, clickedPeriods } = this.state
     const periodKey = `${day.toString()}-${period}`
 
     if (!slots) {
@@ -303,7 +313,8 @@ export default class Timeslot extends Component {
       })
     }
 
-    const isOpen = openedPeriods.includes(periodKey)
+    const isFirstPeriod = period === firstPeriod
+    const isOpen = (!clickedPeriods.includes(periodKey) && isFirstPeriod) || openedPeriods.includes(periodKey)
 
     return (
       <div
@@ -311,7 +322,7 @@ export default class Timeslot extends Component {
           'react-timeslot__period--is-open': isOpen
         })}>
         <div
-          onClick={this.togglePeriodHeader(periodKey)}
+          onClick={this.togglePeriodHeader(periodKey, isFirstPeriod)}
           className='react-timeslot__period-header'>
           <div className='react-timeslot__period-header-icon'>
             <i className={`fa fa-${getPeriodIcon(period)}`} />
@@ -339,11 +350,13 @@ export default class Timeslot extends Component {
 
     const { morning, afternoon, evening } = getDayPeriodSlots(slots)
 
+    const firstPeriod = morning ? 'morning' : afternoon ? 'afternoon' : 'evening'
+
     return (
       <div className='react-timelot__dayslots'>
-        {this.renderPeriodicSlots('morning', morning, day)}
-        {this.renderPeriodicSlots('afternoon', afternoon, day)}
-        {this.renderPeriodicSlots('evening', evening, day)}
+        {this.renderPeriodicSlots('morning', morning, day, firstPeriod)}
+        {this.renderPeriodicSlots('afternoon', afternoon, day, firstPeriod)}
+        {this.renderPeriodicSlots('evening', evening, day, firstPeriod)}
       </div>
     )
   }
