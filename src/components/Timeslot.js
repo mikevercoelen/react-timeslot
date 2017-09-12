@@ -101,6 +101,10 @@ const getFirstAvailableStartDate = availableSlots => {
   return moment().utc().isoWeekday(firstSlot.isoWeekday())
 }
 
+const uppercaseFirst = string => {
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
 export default class Timeslot extends Component {
   static propTypes = {
     availableSlots: PropTypes.arrayOf(PropTypes.shape({
@@ -327,7 +331,7 @@ export default class Timeslot extends Component {
           <div className='react-timeslot__period-header-icon'>
             <i className={`fa fa-${getPeriodIcon(period)}`} />
           </div>
-          {slots.length} slot{slots.length === 1 ? '' : 's'}&nbsp;in the {period}
+          {uppercaseFirst(period)}&nbsp;-&nbsp;{slots.length} slot{slots.length === 1 ? '' : 's'}
           <div className='react-timeslot__period-header-arrow'>
             <i className={`fa fa-chevron-${isOpen ? 'up' : 'down'}`} />
           </div>
