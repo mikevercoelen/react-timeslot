@@ -31,6 +31,10 @@ $react-dates-color-focus: $color-primary !default;
 
 @media screen and (min-width: 0px) and (max-width: 400px) {
   .react-timeslot__day {
+    &:first-child {
+      border-right: 0;
+    }
+    
     &:not(:first-child) {
       display: none;
     }
@@ -179,7 +183,7 @@ $react-dates-color-focus: $color-primary !default;
     background-color: darken(white, 40%);
     color: white;
     text-align: left;
-    padding: 1.5em;
+    padding: 1em;
     cursor: pointer;
     display: flex;
     align-items: center;
