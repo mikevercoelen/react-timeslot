@@ -91,12 +91,6 @@
   }
 
   &__day-slot-radio {
-    width: 14px;
-    height: 14px;
-    background-color: white;
-    border-radius: 50%;
-    border: 1px solid $color-border;
-    box-sizing: border-box;
     margin-right: 1em;
   }
 
@@ -117,11 +111,6 @@
     &:hover,
     &--selected {
       color: $color-primary;
-
-      .react-timeslot__day-slot-radio {
-        background-color: $color-primary;
-        border-color: $color-primary;
-      }
     }
 
     &--selected {

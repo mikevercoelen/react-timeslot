@@ -194,14 +194,19 @@ export default class Timeslot extends Component {
         seconds: 0
       })
 
+    const isSelected = selectedSlot && convertedSlotDate.isSame(selectedSlot)
+
     return (
       <div
         key={index}
         onClick={this.handleClickSlot(convertedSlotDate)}
         className={cx('react-timeslot__day-slot', {
-          'react-timeslot__day-slot--selected': selectedSlot && convertedSlotDate.isSame(selectedSlot)
+          'react-timeslot__day-slot--selected': isSelected
         })}>
-        <div className='react-timeslot__day-slot-radio' />
+        <input
+          type='radio'
+          className='react-timeslot__day-slot-radio'
+          checked={isSelected} />
         {slot.format('HH:mm')} - {slot.clone().add(1, 'hour').format('HH:mm')}
       </div>
     )
@@ -211,7 +216,7 @@ export default class Timeslot extends Component {
     if (!slots) {
       return null
     }
-    
+
     const { selectedSlot } = this.state
 
     let hasSelectedSlot = false
