@@ -5,6 +5,7 @@ import cx from 'classnames'
 import 'twix'
 import 'font-awesome/css/font-awesome.css'
 import { DayPickerSingleDateController } from 'react-dates'
+import _ from 'lodash'
 
 const getPeriodIcon = period => {
   if (period === 'morning') {
@@ -95,6 +96,11 @@ function getDaySlots (slots) {
 
 const today = moment()
 
+const getFirstAvailableStartDate = availableSlots => {
+  const firstSlot = _.min(availableSlots.map(({ start }) => moment(start).utc()))
+  return moment().utc().isoWeekday(firstSlot.isoWeekday())
+}
+
 export default class Timeslot extends Component {
   static propTypes = {
     availableSlots: PropTypes.arrayOf(PropTypes.shape({
@@ -114,7 +120,9 @@ export default class Timeslot extends Component {
   constructor (props) {
     super(props)
 
-    const start = moment().utc()
+    this.firstAvailableDate = getFirstAvailableStartDate(props.availableSlots)
+
+    const start = this.firstAvailableDate.clone()
     const end = start.clone().add(props.days, 'days')
 
     this.state = {
@@ -144,6 +152,10 @@ export default class Timeslot extends Component {
   }
 
   handleClickCalendar = () => {
+    if (this.state.showDatePicker) {
+      return false
+    }
+
     this.setState({
       showDatePicker: true
     })
@@ -172,11 +184,11 @@ export default class Timeslot extends Component {
   }
 
   handleCalendarDayBlocked = date => {
-    if (date.isSame(today, 'day')) {
+    if (date.isSame(this.firstAvailableDate, 'day')) {
       return false
     }
 
-    return !date.isAfter(today, 'day')
+    return date.isBefore(this.firstAvailableDate)
   }
 
   handleCalendarOutsideClick = () => {
@@ -188,7 +200,7 @@ export default class Timeslot extends Component {
   get header () {
     const { start, selectedSlot, showDatePicker } = this.state
 
-    const isPrevEnabled = !start.isSame(today, 'day')
+    const isPrevEnabled = !start.isSame(this.firstAvailableDate, 'day')
 
     return (
       <div className='react-timeslot__header'>
