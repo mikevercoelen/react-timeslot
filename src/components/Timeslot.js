@@ -151,14 +151,14 @@ export default class Timeslot extends Component {
   }
 
   get header () {
-    const { start } = this.state
+    const { start, selectedSlot } = this.state
 
     const isPrevEnabled = !start.isSame(today, 'day')
 
     return (
       <div className='react-timeslot__header'>
         <div className='react-timeslot__header-label'>
-          Select a timeslot
+          {selectedSlot ? selectedSlot.toString() : 'Select a timeslot'}
         </div>
         <div className='react-timeslot__header-controls'>
           <button
@@ -183,15 +183,23 @@ export default class Timeslot extends Component {
     )
   }
 
-  renderSlot (slot, index) {
+  renderSlot (slot, index, day) {
     const { selectedSlot } = this.state
+
+    const convertedSlotDate = day
+      .clone()
+      .set({
+        minutes: slot.minutes(),
+        hours: slot.hours(),
+        seconds: 0
+      })
 
     return (
       <div
         key={index}
-        onClick={this.handleClickSlot(slot)}
+        onClick={this.handleClickSlot(convertedSlotDate)}
         className={cx('react-timeslot__day-slot', {
-          'react-timeslot__day-slot--selected': selectedSlot && slot.isSame(selectedSlot)
+          'react-timeslot__day-slot--selected': selectedSlot && convertedSlotDate.isSame(selectedSlot)
         })}>
         <div className='react-timeslot__day-slot-radio' />
         {slot.format('HH:mm')} - {slot.clone().add(1, 'hour').format('HH:mm')}
@@ -199,19 +207,32 @@ export default class Timeslot extends Component {
     )
   }
 
-  renderDayPeriodSlots (period, slots) {
+  renderPeriodicSlots (period, slots, day) {
     if (!slots) {
       return null
+    }
+    
+    const { selectedSlot } = this.state
+
+    let hasSelectedSlot = false
+
+    if (selectedSlot) {
+      slots.forEach(slot => {
+        if (selectedSlot.format('HH:mm') === slot.format('HH:mm')) {
+          hasSelectedSlot = true
+        }
+      })
     }
 
     return (
       <DayPeriod
+        isOpen={hasSelectedSlot}
         period={period}
-        slots={slots.map((slot, index) => this.renderSlot(slot, index))} />
+        slots={slots.map((slot, index) => this.renderSlot(slot, index, day))} />
     )
   }
 
-  renderDaySlots (slots) {
+  renderSlots (day, slots) {
     if (!slots) {
       return (
         <div className='react-timeslot__day-empty'>
@@ -224,9 +245,9 @@ export default class Timeslot extends Component {
 
     return (
       <div className='react-timelot__dayslots'>
-        {this.renderDayPeriodSlots('morning', morning)}
-        {this.renderDayPeriodSlots('afternoon', afternoon)}
-        {this.renderDayPeriodSlots('evening', evening)}
+        {this.renderPeriodicSlots('morning', morning, day)}
+        {this.renderPeriodicSlots('afternoon', afternoon, day)}
+        {this.renderPeriodicSlots('evening', evening, day)}
       </div>
     )
   }
@@ -266,7 +287,7 @@ export default class Timeslot extends Component {
                 </div>
               </div>
               <div className='react-timeslot__day-slots'>
-                {this.renderDaySlots(slots[day.format('ddd')])}
+                {this.renderSlots(day, slots[day.format('ddd')])}
               </div>
             </div>
           )
