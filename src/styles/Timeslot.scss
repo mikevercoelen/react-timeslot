@@ -1,0 +1,190 @@
+@import './_variables.scss';
+
+@media screen and (min-width: 0px) and (max-width: 400px) {
+  .react-timeslot__day {
+    &:not(:first-child) {
+      display: none;
+    }
+  }
+}
+
+.react-timeslot {
+  &__header {
+    background-color: darken(white, 8%);
+    font-weight: bold;
+    color: #333;
+    display: flex;
+  }
+
+  &__header-label {
+    padding: 1em;
+  }
+
+  &__header-controls {
+    margin-left: auto;
+    color: #828282;
+  }
+
+  &__header-control {
+    border: 0;
+    background: none transparent;
+    height: 100%;
+    padding: 0 1em;
+    cursor: pointer;
+    outline: 0;
+    border-right: 1px solid darken(white, 15%);
+
+    &:hover {
+      color: darken(#828282, 20%);
+    }
+
+    &:last-child {
+      border-right: 0;
+    }
+
+    &--disabled {
+      opacity: .4;
+      cursor: not-allowed;
+    }
+  }
+
+  &__days {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__day {
+    background-color: #F3F3F3;
+    flex: 1;
+    border-right: 1px solid $color-border;
+    min-height: 40em;
+
+    &:last-child {
+      border-right: 0;
+    }
+  }
+
+  &__day-today {
+    font-weight: bold;
+  }
+
+  &__day-header {
+    padding: 1em;
+    border-bottom: 1px solid $color-border;
+    text-align: center;
+  }
+
+  &__day-header-name {
+    font-size: 1.1em;
+    font-weight: bold;
+    line-height: 1;
+    color: #333;
+    margin-bottom: .5em;
+  }
+
+  &__day-header-date {
+    color: #434343;
+  }
+
+  &__day-slots {
+    text-align: center;
+  }
+
+  &__day-slot-radio {
+    width: 14px;
+    height: 14px;
+    background-color: white;
+    border-radius: 50%;
+    border: 1px solid $color-border;
+    box-sizing: border-box;
+    margin-right: 1em;
+  }
+
+  &__day-slot {
+    cursor: pointer;
+    color: #858585;
+    line-height: 1;
+    margin-bottom: 1.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &:hover,
+    &--selected {
+      color: $color-primary;
+
+      .react-timeslot__day-slot-radio {
+        background-color: $color-primary;
+        border-color: $color-primary;
+      }
+    }
+
+    &--selected {
+      font-weight: bold;
+    }
+  }
+
+  &__day-empty {
+    color: #ACACAC;
+    line-height: 1;
+    padding: 2em 0;
+  }
+
+  &__period {
+    &:last-child {
+      .react-timeslot__period-header {
+        border-bottom: 0;
+      }
+    }
+  }
+
+  &__period-header {
+    background-color: darken(white, 40%);
+    color: white;
+    text-align: left;
+    padding: 1.5em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    line-height: 1;
+    user-select: none;
+    border-bottom: 1px solid darken(white, 30%);
+
+    &:hover {
+      background-color: darken(darken(white, 40%), 5%);
+    }
+  }
+
+  &__period-header-arrow {
+    margin-left: auto;
+    opacity: .4;
+
+    i {
+      font-size: 12px;
+    }
+  }
+
+  &__period-header-icon {
+    margin-right: 1em;
+  }
+
+  &__period-slots {
+    padding: 1.5em;
+    display: none;
+  }
+
+  &__period--is-open {
+    .react-timeslot__period-header {
+      background-color: darken(white, 60%);
+    }
+
+    .react-timeslot__period-slots {
+      display: block;
+    }
+  }
+}
