@@ -51,7 +51,7 @@ module.exports = {
         }]
       },
       {
-        test: /\.(ttf|eot|woff|woff2)(\?.*)?$/,
+        test: /\.(svg|ttf|eot|woff|woff2)(\?.*)?$/,
         loader: 'file-loader',
         query: {
           name: '[path][name].[ext]?[hash:8]'

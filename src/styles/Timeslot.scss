@@ -1,5 +1,34 @@
 @import './_variables.scss';
 
+$react-dates-width-input: 130px !default;
+$react-dates-width-arrow: 24px !default;
+$react-dates-width-tooltip-arrow: 20px !default;
+$react-dates-spacing-vertical-picker: 72px !default;
+
+$react-dates-color-primary: $color-primary;
+$react-dates-color-primary-shade-1: #33dacd !default;
+$react-dates-color-primary-shade-2: #66e2da !default;
+$react-dates-color-primary-shade-3: #80e8e0 !default;
+$react-dates-color-primary-shade-4: #b2f1ec !default;
+$react-dates-color-secondary: #007a87 !default;
+$react-dates-color-white: #fff !default;
+$react-dates-color-gray: #565a5c !default;
+$react-dates-color-gray-dark: darken($react-dates-color-gray, 10.5%) !default;
+$react-dates-color-gray-light: lighten($react-dates-color-gray, 17.8%) !default;   // #82888a
+$react-dates-color-gray-lighter: lighten($react-dates-color-gray, 45%) !default;     // #cacccd
+$react-dates-color-gray-lightest: lighten($react-dates-color-gray, 60%) !default;
+$react-dates-color-highlighted: $color-primary;
+
+$react-dates-color-border: #dbdbdb !default;
+$react-dates-color-border-light: #dce0e0 !default;
+$react-dates-color-border-medium: #c4c4c4 !default;
+$react-dates-color-placeholder-text: $color-placeholder !default;
+$react-dates-color-text: #484848 !default;
+$react-dates-color-text-focus: white !default;
+$react-dates-color-focus: $color-primary !default;
+
+@import '~react-dates/css/styles.scss';
+
 @media screen and (min-width: 0px) and (max-width: 400px) {
   .react-timeslot__day {
     &:not(:first-child) {
@@ -23,6 +52,16 @@
   &__header-controls {
     margin-left: auto;
     color: #828282;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__header-calendar {
+    position: absolute;
+    z-index: 10;
+    right: 16px;
+    top: 35px;
   }
 
   &__header-control {
@@ -30,6 +69,7 @@
     background: none transparent;
     height: 100%;
     padding: 0 1em;
+    position: relative;
     cursor: pointer;
     outline: 0;
     border-right: 1px solid darken(white, 15%);
@@ -43,7 +83,10 @@
     }
 
     &--disabled {
-      opacity: .4;
+      i {
+        opacity: .4;
+      }
+
       cursor: not-allowed;
     }
   }
@@ -170,6 +213,7 @@
   &__period--is-open {
     .react-timeslot__period-header {
       background-color: darken(white, 60%);
+      border-bottom: 0;
     }
 
     .react-timeslot__period-slots {

@@ -3,8 +3,18 @@ import PropTypes from 'prop-types'
 import moment from 'moment-timezone'
 import cx from 'classnames'
 import 'twix'
-import DayPeriod from './DayPeriod'
 import 'font-awesome/css/font-awesome.css'
+import { DayPickerSingleDateController } from 'react-dates'
+
+const getPeriodIcon = period => {
+  if (period === 'morning') {
+    return 'coffee'
+  } else if (period === 'afternoon') {
+    return 'sun-o'
+  }
+
+  return 'moon-o'
+}
 
 export const createTimeSlots = (start, end) => {
   let slots = []
@@ -110,7 +120,9 @@ export default class Timeslot extends Component {
     this.state = {
       start,
       end,
-      selectedSlot: null
+      selectedSlot: null,
+      openedPeriods: [],
+      showDatePicker: false
     }
   }
 
@@ -132,12 +144,8 @@ export default class Timeslot extends Component {
   }
 
   handleClickCalendar = () => {
-    const start = moment().utc()
-    const end = start.clone().add(2, 'days')
-
     this.setState({
-      start,
-      end
+      showDatePicker: true
     })
   }
 
@@ -150,8 +158,35 @@ export default class Timeslot extends Component {
     })
   }
 
+  handleDatePickerChange = (date) => {
+    const { days } = this.props
+
+    const start = date.utc()
+    const end = start.clone().add(days, 'days')
+
+    this.setState({
+      start,
+      end,
+      showDatePicker: false
+    })
+  }
+
+  handleCalendarDayBlocked = date => {
+    if (date.isSame(today, 'day')) {
+      return false
+    }
+
+    return !date.isAfter(today, 'day')
+  }
+
+  handleCalendarOutsideClick = () => {
+    this.setState({
+      showDatePicker: false
+    })
+  }
+
   get header () {
-    const { start, selectedSlot } = this.state
+    const { start, selectedSlot, showDatePicker } = this.state
 
     const isPrevEnabled = !start.isSame(today, 'day')
 
@@ -171,7 +206,17 @@ export default class Timeslot extends Component {
           <button
             onClick={this.handleClickCalendar}
             className='react-timeslot__header-control'>
-            <i className='fa fa-calendar-check-o' />
+            <i className='fa fa-calendar-o' />
+            {showDatePicker && (
+              <div className='react-timeslot__header-calendar'>
+                <DayPickerSingleDateController
+                  date={start}
+                  onOutsideClick={this.handleCalendarOutsideClick}
+                  isDayBlocked={this.handleCalendarDayBlocked}
+                  hideKeyboardShortcutsPanel
+                  onDateChange={this.handleDatePickerChange} />
+              </div>
+            )}
           </button>
           <button
             onClick={this.handleClickNext}
@@ -212,7 +257,24 @@ export default class Timeslot extends Component {
     )
   }
 
+  togglePeriodHeader = periodKey => () => {
+    let { openedPeriods } = this.state
+
+    if (openedPeriods.includes(periodKey)) {
+      openedPeriods = openedPeriods.filter(k => k !== periodKey)
+    } else {
+      openedPeriods.push(periodKey)
+    }
+
+    this.setState({
+      openedPeriods
+    })
+  }
+
   renderPeriodicSlots (period, slots, day) {
+    const { openedPeriods } = this.state
+    const periodKey = `${day.toString()}-${period}`
+
     if (!slots) {
       return null
     }
@@ -229,11 +291,28 @@ export default class Timeslot extends Component {
       })
     }
 
+    const isOpen = openedPeriods.includes(periodKey)
+
     return (
-      <DayPeriod
-        isOpen={hasSelectedSlot}
-        period={period}
-        slots={slots.map((slot, index) => this.renderSlot(slot, index, day))} />
+      <div
+        className={cx(`react-timeslot__period`, {
+          'react-timeslot__period--is-open': isOpen
+        })}>
+        <div
+          onClick={this.togglePeriodHeader(periodKey)}
+          className='react-timeslot__period-header'>
+          <div className='react-timeslot__period-header-icon'>
+            <i className={`fa fa-${getPeriodIcon(period)}`} />
+          </div>
+          {slots.length} slot{slots.length === 1 ? '' : 's'}&nbsp;in the {period}
+          <div className='react-timeslot__period-header-arrow'>
+            <i className={`fa fa-chevron-${isOpen ? 'up' : 'down'}`} />
+          </div>
+        </div>
+        <div className='react-timeslot__period-slots'>
+          {slots.map((slot, index) => this.renderSlot(slot, index, day))}
+        </div>
+      </div>
     )
   }
 
