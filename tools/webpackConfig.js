@@ -31,6 +31,16 @@ module.exports = {
         include: paths.srcPath
       },
       {
+        test: /\.scss$/,
+        use: [{
+          loader: 'style-loader'
+        }, {
+          loader: 'css-loader'
+        }, {
+          loader: 'sass-loader'
+        }]
+      },
+      {
         test: /\.css$/,
         use: [{
           loader: 'style-loader'
@@ -39,10 +49,10 @@ module.exports = {
         }]
       },
       {
-        test: /\.(ttf|eot|woff|woff2)(\?.*)?$/,
+        test: /\.(svg|ttf|eot|woff|woff2)(\?.*)?$/,
         loader: 'file-loader',
         query: {
-          name: '[hash:8].[ext]'
+          name: '[path][name].[ext]?[hash:8]'
         }
       }
     ]

@@ -26,37 +26,6 @@ module.exports = {
     filename: '[name].js'
   },
   module: {
-    rules: [
-      {
-        test: /\.js/,
-        loader: 'babel-loader',
-        include: paths.srcPath
-      },
-      {
-        test: /\.scss$/,
-        use: [{
-          loader: 'style-loader'
-        }, {
-          loader: 'css-loader'
-        }, {
-          loader: 'sass-loader'
-        }]
-      },
-      {
-        test: /\.css$/,
-        use: [{
-          loader: 'style-loader'
-        }, {
-          loader: 'css-loader'
-        }]
-      },
-      {
-        test: /\.(svg|ttf|eot|woff|woff2)(\?.*)?$/,
-        loader: 'file-loader',
-        query: {
-          name: '[path][name].[ext]?[hash:8]'
-        }
-      }
-    ]
+    rules: w
   }
 }
