@@ -7,16 +7,6 @@ import 'font-awesome/css/font-awesome.css'
 import { DayPickerSingleDateController } from 'react-dates'
 import _ from 'lodash'
 
-const getPeriodIcon = period => {
-  if (period === 'morning') {
-    return 'coffee'
-  } else if (period === 'afternoon') {
-    return 'sun-o'
-  }
-
-  return 'moon-o'
-}
-
 export const createTimeSlots = (start, end) => {
   let slots = []
   const iterator = start.twix(end).iterate(1, 'hour')
@@ -27,48 +17,6 @@ export const createTimeSlots = (start, end) => {
 
   // Remove the last timeslot (that is not bookable)
   return slots.slice(0, -1)
-}
-
-const getHumanTimePeriod = mDate => {
-  let result = null
-
-  if (!mDate || !mDate.isValid()) {
-    return
-  }
-
-  const splitAfternoon = 12
-  const splitEvening = 17
-  const hour = parseFloat(mDate.format('HH'))
-
-  if (hour >= splitAfternoon && hour <= splitEvening) {
-    result = 'afternoon'
-  } else if (hour >= splitEvening) {
-    result = 'evening'
-  } else {
-    result = 'morning'
-  }
-
-  return result
-}
-
-function getDayPeriodSlots (slots) {
-  if (!slots) {
-    return
-  }
-
-  const result = {}
-
-  slots.forEach(slot => {
-    const period = getHumanTimePeriod(slot)
-
-    if (!result[period]) {
-      result[period] = [slot]
-    } else {
-      result[period].push(slot)
-    }
-  })
-
-  return result
 }
 
 function getDaySlots (slots) {
@@ -99,10 +47,6 @@ const today = moment()
 const getFirstAvailableStartDate = availableSlots => {
   const firstSlot = _.min(availableSlots.map(({ start }) => moment(start).utc()))
   return moment().utc().isoWeekday(firstSlot.isoWeekday())
-}
-
-const uppercaseFirst = string => {
-  return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
 export default class Timeslot extends Component {
@@ -274,75 +218,6 @@ export default class Timeslot extends Component {
     )
   }
 
-  togglePeriodHeader = (periodKey, isFirstPeriod) => () => {
-    let { openedPeriods, clickedPeriods } = this.state
-
-    if (isFirstPeriod && !clickedPeriods.includes(periodKey)) {
-      return this.setState({
-        clickedPeriods: [
-          ...clickedPeriods,
-          periodKey
-        ]
-      })
-    }
-
-    if (openedPeriods.includes(periodKey)) {
-      openedPeriods = openedPeriods.filter(k => k !== periodKey)
-    } else {
-      openedPeriods.push(periodKey)
-    }
-
-    this.setState({
-      openedPeriods
-    })
-  }
-
-  renderPeriodicSlots (period, slots, day, firstPeriod) {
-    const { openedPeriods, clickedPeriods } = this.state
-    const periodKey = `${day.toString()}-${period}`
-
-    if (!slots) {
-      return null
-    }
-
-    const { selectedSlot } = this.state
-
-    let hasSelectedSlot = false
-
-    if (selectedSlot) {
-      slots.forEach(slot => {
-        if (selectedSlot.format('HH:mm') === slot.format('HH:mm')) {
-          hasSelectedSlot = true
-        }
-      })
-    }
-
-    const isFirstPeriod = period === firstPeriod
-    const isOpen = (!clickedPeriods.includes(periodKey) && isFirstPeriod) || openedPeriods.includes(periodKey)
-
-    return (
-      <div
-        className={cx(`react-timeslot__period`, {
-          'react-timeslot__period--is-open': isOpen
-        })}>
-        <div
-          onClick={this.togglePeriodHeader(periodKey, isFirstPeriod)}
-          className='react-timeslot__period-header'>
-          <div className='react-timeslot__period-header-icon'>
-            <i className={`fa fa-${getPeriodIcon(period)}`} />
-          </div>
-          {uppercaseFirst(period)}&nbsp;-&nbsp;{slots.length} slot{slots.length === 1 ? '' : 's'}
-          <div className='react-timeslot__period-header-arrow'>
-            <i className={`fa fa-chevron-${isOpen ? 'up' : 'down'}`} />
-          </div>
-        </div>
-        <div className='react-timeslot__period-slots'>
-          {slots.map((slot, index) => this.renderSlot(slot, index, day))}
-        </div>
-      </div>
-    )
-  }
-
   renderSlots (day, slots) {
     if (!slots) {
       return (
@@ -352,15 +227,9 @@ export default class Timeslot extends Component {
       )
     }
 
-    const { morning, afternoon, evening } = getDayPeriodSlots(slots)
-
-    const firstPeriod = morning ? 'morning' : afternoon ? 'afternoon' : 'evening'
-
     return (
       <div className='react-timelot__dayslots'>
-        {this.renderPeriodicSlots('morning', morning, day, firstPeriod)}
-        {this.renderPeriodicSlots('afternoon', afternoon, day, firstPeriod)}
-        {this.renderPeriodicSlots('evening', evening, day, firstPeriod)}
+        {slots.map((slot, index) => this.renderSlot(slot, index, day))}
       </div>
     )
   }

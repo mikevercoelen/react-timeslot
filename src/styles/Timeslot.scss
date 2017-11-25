@@ -135,6 +135,7 @@ $react-dates-color-focus: $color-primary !default;
 
   &__day-slots {
     text-align: center;
+    margin-top: 1em;
   }
 
   &__day-slot-radio {
@@ -169,59 +170,5 @@ $react-dates-color-focus: $color-primary !default;
     color: #ACACAC;
     line-height: 1;
     padding: 2em 0;
-  }
-
-  &__period {
-    &:last-child {
-      .react-timeslot__period-header {
-        border-bottom: 0;
-      }
-    }
-  }
-
-  &__period-header {
-    background-color: darken(white, 40%);
-    color: white;
-    text-align: left;
-    padding: 1em;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    line-height: 1;
-    user-select: none;
-    border-bottom: 1px solid darken(white, 30%);
-
-    &:hover {
-      background-color: darken(darken(white, 40%), 5%);
-    }
-  }
-
-  &__period-header-arrow {
-    margin-left: auto;
-    opacity: .4;
-
-    i {
-      font-size: 12px;
-    }
-  }
-
-  &__period-header-icon {
-    margin-right: 1em;
-  }
-
-  &__period-slots {
-    padding: 1.5em;
-    display: none;
-  }
-
-  &__period--is-open {
-    .react-timeslot__period-header {
-      background-color: darken(white, 60%);
-      border-bottom: 0;
-    }
-
-    .react-timeslot__period-slots {
-      display: block;
-    }
   }
 }
