@@ -23,8 +23,8 @@ function getDaySlots (slots) {
   const result = {}
 
   slots.forEach(({ start, end }) => {
-    const mStart = moment(start).utc()
-    const mEnd = moment(end).utc()
+    const mStart = moment(start)
+    const mEnd = moment(end)
 
     const timeSlots = createTimeSlots(mStart, mEnd)
 
@@ -45,8 +45,8 @@ function getDaySlots (slots) {
 const today = moment()
 
 const getFirstAvailableStartDate = availableSlots => {
-  const firstSlot = _.min(availableSlots.map(({ start }) => moment(start).utc()))
-  return moment().utc().isoWeekday(firstSlot.isoWeekday())
+  const firstSlot = _.min(availableSlots.map(({ start }) => moment(start)))
+  return moment().isoWeekday(firstSlot.isoWeekday())
 }
 
 export const convertTimezoneWithoutChange = (date, timezone) => {
@@ -86,7 +86,7 @@ export default class Timeslot extends Component {
   constructor (props) {
     super(props)
 
-    this.firstAvailableDate = getFirstAvailableStartDate(props.availableSlots)
+    this.firstAvailableDate = getFirstAvailableStartDate(this.availableSlots)
 
     const start = this.firstAvailableDate.clone()
     const end = start.clone().add(props.days, 'days')
