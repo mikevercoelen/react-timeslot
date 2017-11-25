@@ -27,14 +27,14 @@ $react-dates-color-text: #484848 !default;
 $react-dates-color-text-focus: white !default;
 $react-dates-color-focus: $color-primary !default;
 
-@import '~react-dates/css/styles.scss';
+@import '~react-dates/lib/css/datepicker';
 
 @media screen and (min-width: 0px) and (max-width: 400px) {
   .react-timeslot__day {
     &:first-child {
       border-right: 0;
     }
-    
+
     &:not(:first-child) {
       display: none;
     }
