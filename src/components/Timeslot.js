@@ -49,19 +49,37 @@ const getFirstAvailableStartDate = availableSlots => {
   return moment().utc().isoWeekday(firstSlot.isoWeekday())
 }
 
+export const convertTimezoneWithoutChange = (date, timezone) => {
+  const newDate = date.clone()
+  newDate.tz(timezone)
+  return newDate.add(date.utcOffset() - newDate.utcOffset(), 'minutes')
+}
+
 export default class Timeslot extends Component {
   static propTypes = {
     availableSlots: PropTypes.arrayOf(PropTypes.shape({
+
+      // All slots should be in UTC
       start: PropTypes.string.isRequired,
       end: PropTypes.string.isRequired
     })).isRequired,
-    timezone: PropTypes.string.isRequired,
+    timezones: PropTypes.shape({
+
+      // The source timezone is the timezone of the "person" that is beeing booked
+      source: PropTypes.string.isRequired,
+
+      // The display timezone is the timezone of the user
+      display: PropTypes.string.isRequired
+    }),
     onChange: PropTypes.func.isRequired,
     days: PropTypes.number.isRequired
   }
 
   static defaultProps = {
-    timezone: 'Europe/London',
+    timezones: {
+      source: 'Europe/London',
+      display: 'Europe/Amsterdam'
+    },
     days: 2
   }
 
@@ -81,6 +99,29 @@ export default class Timeslot extends Component {
       clickedPeriods: [],
       showDatePicker: false
     }
+  }
+
+  get availableSlots () {
+    const { availableSlots, timezones: { source, display } } = this.props
+
+    return availableSlots.map(timeslot => {
+      // UTC
+      const startUtc = convertTimezoneWithoutChange(moment(timeslot.start).utc(), source)
+      const endUtc = convertTimezoneWithoutChange(moment(timeslot.end).utc(), source)
+
+      // Source timezone
+      const startSourceTimezone = startUtc.clone().tz(source)
+      const endSourceTimezone = endUtc.clone().tz(source)
+
+      // Display timezone
+      const startTargetTimezone = startSourceTimezone.clone().tz(display)
+      const endTargetTimezone = endSourceTimezone.clone().tz(display)
+
+      return {
+        start: startTargetTimezone,
+        end: endTargetTimezone
+      }
+    })
   }
 
   handleClickSlot = selectedSlot => () => {
@@ -158,7 +199,7 @@ export default class Timeslot extends Component {
         </div>
         <div className='react-timeslot__header-controls'>
           <button
-            onClick={isPrevEnabled && this.handleClickPrev}
+            onClick={isPrevEnabled ? this.handleClickPrev : undefined}
             className={cx('react-timeslot__header-control', {
               'react-timeslot__header-control--disabled': !isPrevEnabled
             })}>
@@ -235,7 +276,7 @@ export default class Timeslot extends Component {
   }
 
   get days () {
-    let { availableSlots } = this.props
+    const availableSlots = this.availableSlots
     const { start, end } = this.state
 
     const days = []

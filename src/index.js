@@ -23,6 +23,10 @@ const onChange = () => {
 
 render((
   <Timeslot
+    timezones={{
+      source: 'Europe/Amsterdam',
+      display: 'Asia/Bangkok'
+    }}
     availableSlots={availableSlots}
     onChange={onChange} />
 ),
